@@ -49,7 +49,7 @@ public class Main {
             
             List<Date> parsed = parser.getParsed();
             
-            System.out.println(parsed.size());
+            System.out.println(parsed.size() + " dates found:");
             for (Date date : parsed) {
                 System.out.println(date.toString());
             }
