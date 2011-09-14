@@ -16,6 +16,16 @@
  */
 package com.aperigeek.gotadate.cli;
 
+import com.aperigeek.gotadate.parser.DateParseException;
+import com.aperigeek.gotadate.parser.DateParser;
+import com.aperigeek.gotadate.token.DateTokenizer;
+import com.aperigeek.gotadate.token.TokenizerException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Date;
+import java.util.List;
+
 /**
  *
  * @author Vivien Barousse
@@ -23,7 +33,39 @@ package com.aperigeek.gotadate.cli;
 public class Main {
     
     public static void main(String[] args) {
-        System.out.println("gotadate-cli");
+        if (args.length != 1) {
+            System.err.println("Usage: ");
+            System.err.println("\tjava -jar gotadate-cli.jar file");
+            System.err.println("\tWhere:");
+            System.err.println("\t\tfile is the file to analyse");
+            System.exit(1);
+        }
+        
+        try {
+            Reader reader = new FileReader(args[0]);
+            DateTokenizer tokenizer = new DateTokenizer(reader);
+            DateParser parser = new DateParser(tokenizer);
+            parser.parse();
+            
+            List<Date> parsed = parser.getParsed();
+            
+            System.out.println(parsed.size());
+            for (Date date : parsed) {
+                System.out.println(date.toString());
+            }
+        } catch (DateParseException ex) {
+            System.err.println("Error during parsing");
+            ex.printStackTrace(System.err);
+            System.exit(4);
+        } catch (TokenizerException ex) {
+            System.err.println("Error during tokenization");
+            ex.printStackTrace(System.err);
+            System.exit(3);
+        } catch (IOException ex) {
+            System.err.println("Unable to read file");
+            ex.printStackTrace(System.err);
+            System.exit(2);
+        }
     }
     
 }
